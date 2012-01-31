@@ -1,0 +1,2 @@
+1) create csv data file
+ $ groovy protoResults.groovy >data/scResults.csv
