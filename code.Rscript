@@ -24,10 +24,11 @@ results$subregion<- tolower(results$County)
 
 sc.map <-map_data("county","south carolina")
 
+# use plyr function to merge data
 sc.df <-join(sc.map,results,by="subregion")
 
 
 
-p<-ggplot(sc.df) +geom_polygon(aes(long,lat,group=group,fill=pct.santorum))+ geom_path(color="white") + coord_equal() + scale_fill_gradient(limits=c(0,100),low="white",high="red") + theme_map()
+p<-ggplot(sc.df)+ aes(long,lat,group=group,fill=pct.santorum)  +geom_polygon()+ geom_path(color="white") + coord_equal() + scale_fill_gradient(limits=c(0,100),low="white",high="red") + theme_map()
 #ggsave("santorum.png")
 
