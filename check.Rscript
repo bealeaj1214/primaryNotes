@@ -2,3 +2,4 @@ results <-read.csv("data/scResults.csv")
 # drop first three columns and total the votes for each canidate
 sapply(results[c(-1,-2,-3)],sum)
 # compare with  values in //Contest/Choice@text, //Contest/Choice@totalVotes
+

@@ -1,0 +1,33 @@
+
+require(maps)
+require(plyr)
+require(ggplot2)
+
+source("theme_map.R")
+
+# Read results  transformed using protoResults.groovy
+# from http://www.enr-scvotes.org/SC/36831/66752/en/reports.html
+results <-read.csv("data/scResults.csv",strip.white=TRUE)
+
+# calculate vote percentages for selected candidates
+results$pct.paul <-results$Paul/results$ballotsCast *100.0
+results$pct.bachmann <-results$Bachmann/results$ballotsCast *100.0
+results$pct.cain <-results$Cain/results$ballotsCast *100.0
+results$pct.perry <-results$Perry/results$ballotsCast *100.0
+results$pct.santorum <-results$Santorum/results$ballotsCast *100.0
+results$pct.gingrich <-results$Gingrich/results$ballotsCast *100.0
+results$pct.romney <-results$Romney/results$ballotsCast *100.0
+
+
+# normalize county names for merge
+results$subregion<- tolower(results$County)
+
+sc.map <-map_data("county","south carolina")
+
+sc.df <-join(sc.map,results,by="subregion")
+
+
+
+p<-ggplot(sc.df) +geom_polygon(aes(long,lat,group=group,fill=pct.santorum))+ geom_path(color="white") + coord_equal() + scale_fill_gradient(limits=c(0,100),low="white",high="red") + theme_map()
+#ggsave("santorum.png")
+
