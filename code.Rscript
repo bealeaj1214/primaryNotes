@@ -39,6 +39,8 @@ p<-ggplot(sc.df)+ aes(long,lat,group=group,fill=pct.santorum)  +geom_polygon()+ 
         scale_fill_gradient(name=name,limits=c(0,100),low=low,high=high))
  }
 
+# used info referenced in
+# http://stackoverflow.com/questions/4835332/how-can-i-combine-multiple-ggplot2-elements-into-the-return-of-a-function
 candidate_plot<-function(candidate,data=sc.df){
   voterPercentage<-paste("pct.",tolower(candidate),sep="")
   label<-paste("percentage",candidate,sep="\n")
@@ -50,6 +52,7 @@ candidate_plot<-function(candidate,data=sc.df){
 p<-candidate_plot(candidate="Gingrich")
 ggsave("gingrich.png")
 
+# abuse lapply to loop through a subset of the candidates
 lapply(c("Paul","Romney","Santorum"),function(x) {
   plot.name=paste(tolower(x),".png",sep="")
   p<-candidate_plot(candidate=x)
