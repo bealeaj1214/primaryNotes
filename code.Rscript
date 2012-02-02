@@ -32,3 +32,26 @@ sc.df <-join(sc.map,results,by="subregion")
 p<-ggplot(sc.df)+ aes(long,lat,group=group,fill=pct.santorum)  +geom_polygon()+ geom_path(color="white") + coord_equal() + scale_fill_gradient(limits=c(0,100),low="white",high="red") + theme_map()
 #ggsave("santorum.png")
 
+ election_choropleth_layer<-function(low="white",high="red",name=NULL) {
+   list(geom_polygon(),
+        geom_path(color="white"),
+        coord_equal(),
+        scale_fill_gradient(name=name,limits=c(0,100),low=low,high=high))
+ }
+
+candidate_plot<-function(candidate,data=sc.df){
+  voterPercentage<-paste("pct.",tolower(candidate),sep="")
+  label<-paste("percentage",candidate,sep="\n")
+  p<-ggplot(data)+
+    aes_string(x="long",y="lat",group="group",fill=voterPercentage)+
+      election_choropleth_layer(name=label)  +theme_map()
+}
+
+p<-candidate_plot(candidate="Gingrich")
+ggsave("gingrich.png")
+
+lapply(c("Paul","Romney","Santorum"),function(x) {
+  plot.name=paste(tolower(x),".png",sep="")
+  p<-candidate_plot(candidate=x)
+  ggsave(plot.name,plot=p)
+} )
