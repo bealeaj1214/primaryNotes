@@ -7,7 +7,7 @@ source("theme_map.R")
 
 # Read results  transformed using protoResults.groovy
 # from http://www.enr-scvotes.org/SC/36831/66752/en/reports.html
-results <-read.csv("data/scResults.csv",strip.white=TRUE)
+results <-read.csv("SC/data/scResults.csv",strip.white=TRUE)
 
 # calculate vote percentages for selected candidates
 results$pct.paul <-results$Paul/results$ballotsCast *100.0
@@ -50,11 +50,11 @@ candidate_plot<-function(candidate,data=sc.df){
 }
 
 p<-candidate_plot(candidate="Gingrich")
-ggsave("gingrich.png")
+ggsave("SC/gingrich.png")
 
 # abuse lapply to loop through a subset of the candidates
 lapply(c("Paul","Romney","Santorum"),function(x) {
-  plot.name=paste(tolower(x),".png",sep="")
+  plot.name=paste("SC/",tolower(x),".png",sep="")
   p<-candidate_plot(candidate=x)
   ggsave(plot.name,plot=p)
 } )
