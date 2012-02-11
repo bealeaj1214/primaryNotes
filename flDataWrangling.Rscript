@@ -1,0 +1,46 @@
+require("reshape2")
+# reading raw data in tab delimited table
+flordia.results.file <-"FL/data/flPrimaryResults.txt"
+florida.raw <- read.table(flordia.results.file, header=TRUE,
+                          sep="\t",strip.white=TRUE,
+                          stringsAsFactors=FALSE)
+
+
+
+# select columns CountyName, CanNameLast and CanVotes
+fl.long.data <-subset(florida.raw,grepl("PRE",RaceCode))[c(7,12,15)]
+
+# update and normalize character class columns
+
+# define logical vector for charater columns
+fl.chars.cols<- vapply(fl.long.data,is.character,logical(1))
+
+# modify  with tolower and reassign all character columns
+fl.long.data[fl.chars.cols] <- lapply(fl.long.data[fl.chars.cols],tolower)
+
+# rename CountyName to subregion
+names(fl.long.data)[1] <-"subregion"
+
+fl.wide.data <- dcast(fl.long.data,subregion ~ CanNameLast,sum,value.var="CanVotes")
+
+# Wrangle Totals
+#
+require(XML)
+url<-"http://enight.elections.myflorida.com/Default6.aspx"
+fl.primary.tables<-readHTMLTable(url)
+fl.countyReporting.df <-fl.primary.tables[[1]]
+
+as.count<-function(x) {as.integer(gsub("[,]","",x))}
+fl.countTotals<-fl.countyReporting.df[c(1,2)]
+
+names(fl.countTotals) <-c("subregion","ballotsCast")
+fl.countTotals$subregion<- tolower(fl.countTotals$subregion)
+fl.countTotals$ballotsCast <-as.count(fl.countTotals$ballotsCast)
+require("plyr")
+
+fl.primary.data<-join(fl.wide.data,fl.countTotals,by="subregion")
+
+fl.primary.file<-"FL/data/flResults.csv"
+
+write.csv(fl.primary.data,file=fl.primary.file,row.names=FALSE)
+
