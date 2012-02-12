@@ -25,6 +25,9 @@ fl.wide.data <- dcast(fl.long.data,subregion ~ CanNameLast,sum,value.var="CanVot
 
 # Wrangle Totals
 #
+
+# use http://www.r-bloggers.com/scrape-web-data-using-r/ for html
+# table scrapping hints
 require(XML)
 url<-"http://enight.elections.myflorida.com/Default6.aspx"
 fl.primary.tables<-readHTMLTable(url)
@@ -36,11 +39,13 @@ fl.countTotals<-fl.countyReporting.df[c(1,2)]
 names(fl.countTotals) <-c("subregion","ballotsCast")
 fl.countTotals$subregion<- tolower(fl.countTotals$subregion)
 fl.countTotals$ballotsCast <-as.count(fl.countTotals$ballotsCast)
+
+# join data
 require("plyr")
 
 fl.primary.data<-join(fl.wide.data,fl.countTotals,by="subregion")
 
 fl.primary.file<-"FL/data/flResults.csv"
-
+# write out as csv file
 write.csv(fl.primary.data,file=fl.primary.file,row.names=FALSE)
 
