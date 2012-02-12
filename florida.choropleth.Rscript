@@ -1,0 +1,40 @@
+require(maps)
+require(plyr)
+require(ggplot2)
+
+source("theme_map.R")
+source("candidatePlot.R")
+
+# shaped data with flDataWrangling.Rscript
+flResults <-read.csv("FL/data/flResults.csv",strip.white=TRUE,stringsAsFactors=FALSE)
+
+# fix up county names to match those is maps package for florida
+temp <-flResults$subregion
+ temp[match(c("desoto" ,    "miami-dade" , "st. johns" , "st. lucie" ), flResults$subregion)]<-c("de soto","dade","st johns","st lucie")
+flResults$subregion <-temp
+
+# calculate vote percentages for selected candidates
+flResults$pct.paul <-flResults$paul/flResults$ballotsCast *100.0
+flResults$pct.bachmann <-flResults$bachmann/flResults$ballotsCast *100.0
+flResults$pct.cain <-flResults$cain/flResults$ballotsCast *100.0
+flResults$pct.perry <-flResults$perry/flResults$ballotsCast *100.0
+flResults$pct.santorum <-flResults$santorum/flResults$ballotsCast *100.0
+flResults$pct.gingrich <-flResults$gingrich/flResults$ballotsCast *100.0
+flResults$pct.romney <-flResults$romney/flResults$ballotsCast *100.0
+
+# note subregions will be character data
+fl.map <-map_data("county","florida")
+
+# use plyr function to merge data # ensure both subregion columns are
+# charatder data
+fl.df <-join(fl.map,flResults,by="subregion")
+
+
+#p <- candidate_plot("Santorum",data=fl.df)
+
+
+lapply(c("Paul","Romney","Santorum","Gingrich"),function(x) {
+  plot.name=paste("FL/",tolower(x),".png",sep="")
+  p<-candidate_plot(candidate=x,data=fl.df)
+  ggsave(plot.name,plot=p)
+} )
